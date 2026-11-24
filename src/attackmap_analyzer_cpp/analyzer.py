@@ -292,6 +292,14 @@ class CppAnalyzer:
         enabled_by_default=False,  # opt-in via `-m cpp` while experimental (AttackMap#221)
     )
 
+    # SDK v2 (AR082 / AC-403): explicitly declare the extraction protocol this
+    # analyzer targets. Core's
+    # attackmap.sdk.analyzer_contracts.declared_extraction_protocol picks this
+    # attribute up from the analyzer class. Compat note: plugins pinned to
+    # protocol 1.0 keep loading — core lifts v1 payloads through
+    # attackmap.extraction.adapters.
+    EXTRACTION_PROTOCOL_VERSION = "2.0"
+
     @property
     def name(self) -> str:
         return self.metadata.name

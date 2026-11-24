@@ -711,3 +711,21 @@ def test_header_ownership_rule(tmp_path: Path, extra: dict[str, str], owner: str
     scanned_header = any(s.file == "inc/api.h" and s.name == "API_TOKEN" for s in result.secret_hints)
     assert scanned_header is (owner == "cpp")
     assert analyzer.detect(tmp_path) is (owner == "cpp")
+
+
+# ---------- extraction protocol declaration (SDK v2) ----------
+
+def test_declares_extraction_protocol_2() -> None:
+    """AC-403: the analyzer explicitly declares extraction protocol 2.0.
+
+    Core's declared_extraction_protocol picks the class attribute up so
+    version gating reports the pinned version rather than the SDK default.
+    Compat note: plugins pinned to protocol 1.0 still load — core lifts v1
+    payloads through attackmap.extraction.adapters (v1 -> v2 -> v1 is
+    lossless), so this declaration must never remove v1 compatibility.
+    """
+    from attackmap.sdk.analyzer_contracts import declared_extraction_protocol
+
+    assert CppAnalyzer.EXTRACTION_PROTOCOL_VERSION == "2.0"
+    assert declared_extraction_protocol(CppAnalyzer()) == "2.0"
+    assert declared_extraction_protocol(CppAnalyzer) == "2.0"
